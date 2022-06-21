@@ -1,5 +1,6 @@
 <?php namespace Illuminate\Routing;
 
+use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Matching\UriValidator;
 use Illuminate\Routing\Matching\HostValidator;
@@ -8,6 +9,8 @@ use Illuminate\Routing\Matching\SchemeValidator;
 use Symfony\Component\Routing\Route as SymfonyRoute;
 
 class Route {
+
+    use RouteDependencyResolverTrait;
 
 	/**
 	 * The URI pattern the route responds to.
@@ -65,6 +68,13 @@ class Route {
 	 */
 	protected $compiled;
 
+    /**
+     * The container instance used by the route.
+     *
+     * @var \Illuminate\Container\Container
+     */
+    protected $container;
+
 	/**
 	 * The validators used by the routes.
 	 *
@@ -104,9 +114,11 @@ class Route {
 	 */
 	public function run()
 	{
-		$parameters = array_filter($this->parameters(), function($p) { return isset($p); });
+        $callable = $this->action['uses'];
 
-		return call_user_func_array($this->action['uses'], $parameters);
+        return $callable(...array_values($this->resolveMethodDependencies(
+            $this->parametersWithoutNulls(), new \ReflectionFunction($callable)
+        )));
 	}
 
 	/**
@@ -811,4 +823,16 @@ class Route {
 		return $this->compiled;
 	}
 
+    /**
+     * Set the container instance on the route.
+     *
+     * @param  \Illuminate\Container\Container  $container
+     * @return $this
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
+
+        return $this;
+    }
 }
