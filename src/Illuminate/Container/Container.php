@@ -552,7 +552,9 @@ class Container implements ArrayAccess {
 
 		foreach ($parameters as $parameter)
 		{
-			$dependency = $parameter->getType()?->getName();
+            $dependency = $parameter->getType() && ! $parameter->getType()->isBuiltin()
+                ? new ReflectionClass($parameter->getType()->getName())
+                : null;
 
 			// If the class is null, it means the dependency is a string or some other
 			// primitive type which we can not resolve since it is not a class and
