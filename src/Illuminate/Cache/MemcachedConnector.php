@@ -1,5 +1,6 @@
 <?php namespace Illuminate\Cache;
 
+use Illuminate\Support\Arr;
 use Memcached;
 
 class MemcachedConnector {
@@ -22,7 +23,7 @@ class MemcachedConnector {
 		foreach ($servers as $server)
 		{
 			$memcached->addServer(
-				$server['host'], $server['port'], $server['weight']
+                Arr::get($server, "host"), Arr::get($server, "port"), Arr::get($server, "weight")
 			);
 		}
 
