@@ -22,7 +22,7 @@ class MemcachedConnector {
 		foreach ($servers as $server)
 		{
 			$memcached->addServer(
-				$server['host'], $server['port'], $server['weight']
+				$server['host'] ?? null, $server['port'] ?? null, $server['weight'] ?? null
 			);
 		}
 
