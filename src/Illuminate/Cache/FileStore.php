@@ -12,6 +12,11 @@ class FileStore implements StoreInterface {
 	protected $files;
 
 	/**
+ 	 * Which app component use the cache
+         */
+	protected $component;
+
+	/**
 	 * The file cache directory
 	 *
 	 * @var string
@@ -50,6 +55,10 @@ class FileStore implements StoreInterface {
 	 */
 	protected function getPayload($key)
 	{
+		if(!$key){
+			throw new \Exception("Required parameter not has been set");
+		}
+		
 		$path = $this->path($key);
 
 		// If the file doesn't exists, we obviously can't return the cache so we will
